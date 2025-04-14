@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@budibase/cli": "^3.6.0"
+  }
+}
