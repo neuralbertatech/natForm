@@ -1,0 +1,37 @@
+# Copied from HeyForm documentation - Deploy to a public server
+# Accessed 2025/04/28
+
+services:
+  heyform:
+    image: heyform/community-edition:latest
+    restart: always
+    volumes:
+      - ./assets:/app/static/upload
+    depends_on:
+      - keydb
+    ports:
+      - '9513:9513'
+    environment:
+      # See https://docs.heyform.net/open-source/configuration/environment-variables
+      APP_LISTEN_PORT: 9513
+      APP_HOMEPAGE_URL: http://localhost:9513
+      SESSION_KEY: ${HEYFORM_SESSION_KEY}
+      FORM_ENCRYPTION_KEY: ${HEYFORM_ENCRYPTION_KEY}
+      MONGO_URI: 'mongodb://host.docker.internal:27017/heyform'
+      MONGO_USER: ${HEYFORM_MONGO_USER}
+      MONGO_PASSWORD: ${HEYFORM_MONGO_PASSWORD}
+      REDIS_HOST: keydb
+      REDIS_PORT: 6379
+      # Suggest - https://docs.heyform.net/open-source/configuration/authentication
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  keydb:
+    image: eqalpha/keydb
+    restart: always
+    command: keydb-server --appendonly yes --protected-mode no
+    volumes:
+      - keydb:/data
+
+volumes:
+  keydb:
